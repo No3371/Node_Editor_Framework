@@ -17,6 +17,8 @@ namespace NodeEditorFramework
 		public Node selectedNode; // selected Node
 		[NonSerialized] public Node focusedNode; // Node under mouse
 		[NonSerialized] public ConnectionKnob focusedConnectionKnob; // ConnectionKnob under mouse
+		[NonSerialized] public ConnectionKnob selectedConnectionKnob; // ConnectionKnob dragged
+		[NonSerialized] public string selectedConnectionHash = string.Empty;
 		[NonSerialized] public NodeGroup activeGroup; // NodeGroup that is currently interacted with
 
 		// Navigation State
@@ -26,6 +28,7 @@ namespace NodeEditorFramework
 		// Current Action
 		[NonSerialized] public ConnectionKnob connectKnob; // connection this output
 		[NonSerialized] public bool dragNode; // node dragging
+		[NonSerialized] public bool selectingConnection; // port dragging
 		[NonSerialized] public bool panWindow; // window panning
 		[NonSerialized] public bool navigate; // navigation ('N')
 		[NonSerialized] public bool resizeGroup; // whether the active group is being resized; if not, it is dragged
