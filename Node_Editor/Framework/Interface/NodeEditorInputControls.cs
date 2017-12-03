@@ -115,6 +115,60 @@ namespace NodeEditorFramework
 
 		}
 
+		#endregion
+
+		#region Port Dragging
+
+		[EventHandlerAttribute (EventType.MouseDown, 101)] // Priority over hundred to make it call after the GUI
+		private static void HandlePortDraggingStart (NodeEditorInputInfo inputInfo) 
+		{
+			if (GUIUtility.hotControl > 0)
+				return; // GUI has control
+
+			NodeEditorState state = inputInfo.editorState;
+			if (inputInfo.inputEvent.button == 1 && state.selectedConnectionHash == string.Empty && state.focusedConnectionKnob != null && state.focusedConnectionKnob.connected()) 
+			{ // Clicked inside the selected Node, so start dragging it
+				state.selectedConnectionKnob = state.focusedConnectionKnob;
+				state.selectingConnection = true;
+				state.StartDrag ("port", inputInfo.inputPos, Vector2.zero);
+			}
+		}
+
+		[EventHandlerAttribute (EventType.MouseDrag)]
+		private static void HandlePortDragging (NodeEditorInputInfo inputInfo) 
+		{
+			NodeEditorState state = inputInfo.editorState;
+			if (state.selectingConnection) 
+			{ // If conditions apply, drag the selected node, else disable dragging
+				if (state.dragUserID == "port")
+				{
+					state.selectedConnectionHash = ConnectionManager.ConnectionHash(state.selectedConnectionKnob, state.selectedConnectionKnob.connections[(int) (((((inputInfo.inputPos - state.dragMouseStart).y) / 40) + 960) % state.selectedConnectionKnob.connections.Count)]);
+					NodeEditor.RepaintClients ();
+				} 
+				else
+				{
+					state.selectingConnection = false;
+				}
+			}
+		}
+
+		[EventHandlerAttribute (EventType.MouseDown)]
+		[EventHandlerAttribute (EventType.MouseUp)]
+		private static void HandlePortDraggingEnd (NodeEditorInputInfo inputInfo) 
+		{
+			if (inputInfo.editorState.dragUserID == "port" && inputInfo.editorState.selectingConnection) 
+			{
+				inputInfo.editorState.EndDrag ("port");
+				if (inputInfo.editorState.selectedConnectionHash != string.Empty)
+				{
+					ConnectionManager.Deconnect(inputInfo.editorState.selectedConnectionHash);
+					NodeEditor.RepaintClients ();
+				}
+			}
+			inputInfo.editorState.selectedConnectionKnob = null;
+			inputInfo.editorState.selectedConnectionHash = string.Empty;
+			inputInfo.editorState.selectingConnection = false;
+		}
 
 		#endregion
 
@@ -224,17 +278,12 @@ namespace NodeEditorFramework
 					inputInfo.inputEvent.Use ();
 				}
 				else if (state.focusedConnectionKnob.maxConnectionCount == ConnectionCount.Single)
-				{ // Knob with single connection clicked
-					if (state.focusedConnectionKnob.connected())
-					{ // Loose and edit existing connection from it
+				{ // Knob with single connection clicked -> Loose and edit connection from it
+					if (state.focusedConnectionKnob.connected ())
+					{
 						state.connectKnob = state.focusedConnectionKnob.connection(0);
-						state.focusedConnectionKnob.RemoveConnection(state.connectKnob);
-						inputInfo.inputEvent.Use();
-					}
-					else
-					{ // Not connected, draw a new connection from it
-						state.connectKnob = state.focusedConnectionKnob;
-						inputInfo.inputEvent.Use();
+						state.focusedConnectionKnob.RemoveConnection (state.connectKnob);
+						inputInfo.inputEvent.Use ();
 					}
 				}
 			}

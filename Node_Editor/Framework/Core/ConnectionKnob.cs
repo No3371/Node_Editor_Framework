@@ -200,7 +200,7 @@ namespace NodeEditorFramework
 			{
 				Vector2 endPos = connectionKnob.GetGUIKnob().center;
 				Vector2 endDir = connectionKnob.GetDirection();
-				NodeEditorGUI.DrawConnection(startPos, startDir, endPos, endDir, color);
+				NodeEditorGUI.DrawConnection(startPos, startDir, endPos, endDir, (NodeEditor.curEditorState.selectedConnectionHash == ConnectionManager.ConnectionHash(this, connectionKnob))? color * 1.5f : color);
 			}
 		}
 

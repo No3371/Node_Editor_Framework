@@ -97,6 +97,8 @@ namespace NodeEditorFramework
 			// Init input
 			NodeEditorInputSystem.SetupInput ();
 
+			ConnectionManager.Hook();
+
 		#if UNITY_EDITOR
 			UnityEditor.EditorApplication.update -= Update;
 			UnityEditor.EditorApplication.update += Update;

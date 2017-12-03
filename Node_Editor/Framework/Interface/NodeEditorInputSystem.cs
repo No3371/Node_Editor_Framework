@@ -267,13 +267,16 @@ namespace NodeEditorFramework
 		{
 			if (Event.current.button == 1) 
 			{ // Handle context clicks on Node and canvas
-				GenericMenu contextMenu = new GenericMenu ();
-				if (inputInfo.editorState.focusedNode != null) // Node Context Click
-					FillContextMenu (inputInfo, contextMenu, ContextType.Node);
-				else // Editor Context Click
-					FillContextMenu (inputInfo, contextMenu, ContextType.Canvas);
-				contextMenu.ShowAsContext ();
-				Event.current.Use ();
+				if (inputInfo.editorState.focusedConnectionKnob == null)
+				{
+					GenericMenu contextMenu = new GenericMenu ();
+					if (inputInfo.editorState.focusedNode != null) // Node Context Click
+						FillContextMenu (inputInfo, contextMenu, ContextType.Node);
+					else // Editor Context Click
+						FillContextMenu (inputInfo, contextMenu, ContextType.Canvas);
+					contextMenu.ShowAsContext ();
+					Event.current.Use ();
+				}
 			}
 		}
 
